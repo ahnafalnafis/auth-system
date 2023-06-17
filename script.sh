@@ -4,7 +4,7 @@ run() {
 }
 
 build() {
-  g++ src/*.cpp -o bin/app
+  g++ src/*.cpp -o build/app
 }
 
 clean() {
