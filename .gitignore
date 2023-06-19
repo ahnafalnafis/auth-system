@@ -1,3 +1,4 @@
 **/*.out
 bin
-db.json
+database.json
+.env
