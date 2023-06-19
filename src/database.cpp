@@ -7,7 +7,7 @@ Database::Database(std::string data_file) {
   this->data_file = data_file;
 
   std::ifstream file_content(this->data_file);
-  this->data = nlohmann::json::parse(data_file);
+  this->data = nlohmann::json::parse(file_content);
 }
 
 void Database::save() {
