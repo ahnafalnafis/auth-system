@@ -1,18 +1,13 @@
-#include "database.hpp"
+#include "database.h"
+#include "user.h"
+#include "utils.h"
 #include <iostream>
-#include <nlohmann/json.hpp>
-
-using nlohmann::json;
-using std::string;
-
-/*
- * TODO:
- * Make an User object.
- * User integration in database.
- * */
 
 int main(void) {
-  Database db = Database();
+  Database db = Database(std::getenv("DATABASE"));
+  User whoever = User("whoever", "whoever@nowhere.com", "nothing");
+
+  db.createUser(whoever);
 
   db.save();
   return 0;
