@@ -1,4 +1,5 @@
 #include "user.h"
+
 #include <iostream>
 
 User::User(std::string username, std::string email, std::string password) {

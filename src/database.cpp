@@ -1,7 +1,9 @@
 #include "database.h"
-#include "utils.h"
+
 #include <fstream>
 #include <iostream>
+
+#include "utils.h"
 
 Database::Database(std::string data_file) {
   this->data_file = data_file;
@@ -32,7 +34,6 @@ void Database::createUser(User user) {
 
 void Database::deleteUser(User user) {
   if (exists(user)) {
-
     utils::ForEach(this->data,
                    [&user, this](nlohmann::json::iterator i) mutable -> bool {
                      if (i.value()["email"] == user.getEmail()) {

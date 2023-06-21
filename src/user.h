@@ -16,12 +16,12 @@
 #include <iostream>
 
 class User {
-private:
+ private:
   std::string username;
   std::string email;
   std::string password;
 
-public:
+ public:
   User(std::string username, std::string email, std::string password);
 
   std::string getUserName(void);

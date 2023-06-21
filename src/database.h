@@ -1,4 +1,4 @@
-/*
+/* *
  * Database class, it loads the data from the database when it is instantiated
  * and provides functionalities like:
  *  - Creating a new user data in the database.
@@ -17,29 +17,30 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include "user.h"
 #include <iostream>
 #include <nlohmann/json.hpp>
 
+#include "user.h"
+
 class Database {
-private:
+ private:
   std::string data_file;
 
-public:
-  /*
+ public:
+  /* *
    * Data will be stored temporarily to this variable and the data will be
    * saved when the program exits.
    */
   nlohmann::json data;
 
-  /*
+  /* *
    * Constructor function:
    * Parameters:
    *  data_file - The file where the data will be stored into.
    */
   Database(std::string data_file);
 
-  /*
+  /* *
    * Saves the changes that are made to the data. At least, call the
    * function before the program exits. Otherwise, it may cause losing
    * valuable data.

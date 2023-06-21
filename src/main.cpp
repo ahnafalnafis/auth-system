@@ -1,13 +1,14 @@
+#include <iostream>
+
 #include "database.h"
 #include "user.h"
 #include "utils.h"
-#include <iostream>
 
 int main(void) {
-  Database db = Database(std::getenv("DATABASE"));
+  Database db = Database("./database.json");
   User whoever = User("whoever", "whoever@nowhere.com", "nothing");
 
-  db.createUser(whoever);
+  db.deleteUser(whoever);
 
   db.save();
   return 0;
