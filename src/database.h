@@ -17,8 +17,8 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
-#include <iostream>
 #include <nlohmann/json.hpp>
+#include <string>
 
 #include "user.h"
 
