@@ -6,9 +6,11 @@
 
 int main(void) {
   Database db = Database("./database.json");
-  User whoever = User("whoever", "whoever@nowhere.com", "nothing");
 
-  db.deleteUser(whoever);
+  /* *
+   * TODO:
+   * Finally, implement the login and registration process!
+   * */
 
   db.save();
   return 0;
