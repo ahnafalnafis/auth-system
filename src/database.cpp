@@ -53,8 +53,9 @@ bool Database::exists(User user) {
   bool existence;
 
   utils::ForEach(
-      this->data,
-      [user, &existence](nlohmann::json::iterator i) mutable -> bool {
+      this->data,  // The JSON data
+      [user, &existence](
+          nlohmann::json::iterator i /* the iterator */) mutable -> bool {
         existence = (i.value()["email"] == user.getEmail());
 
         return existence;
