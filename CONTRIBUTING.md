@@ -45,6 +45,8 @@ C++ source files. Those may go in the header files. And also, one should make
 their code self descriptive so that other developers do not have to look up
 into the header files. But no one should make their code over descriptive.
 
+Also, feel free to improve documentations if it is necessary.
+
 ## Style guides
 
 We are trying to follow [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
@@ -54,3 +56,9 @@ our repository, so that one can use it format their code with
 [clang-format](https://clang.llvm.org/docs/ClangFormat.html) (A C++ code
 formatter). If you use other formatter then make sure that that formatter is
 using Google's style guide.
+
+## Commit messages
+
+There is no rules for commit messages for now. But try to avoid writing
+unnecessary commit messages and create intuitive commit messages so that that
+can be understood by other contributors/developers.
