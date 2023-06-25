@@ -5,7 +5,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <iostream>
+#include <functional>
 
 #include "nlohmann/json.hpp"
 
@@ -20,13 +20,5 @@ namespace utils {
 void ForEach(nlohmann::json &data,
              std::function<bool(nlohmann::json::iterator)> callback);
 }  // namespace utils
-
-namespace io {
-/* *
- * Convenient Python-like C++ in input wrapper.
- * */
-template <typename T>
-T input(const std::string &prompt = "");
-}  // namespace io
 
 #endif
