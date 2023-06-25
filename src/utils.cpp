@@ -16,7 +16,6 @@ void utils::ForEach(nlohmann::json &data,
 template <typename T>
 T io::input(const std::string &prompt) {
   std::cout << prompt;
-
   T value;
   std::cin >> value;
 
