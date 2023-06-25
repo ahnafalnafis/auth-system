@@ -20,10 +20,12 @@ T io::input(const std::string &prompt) {
   T value;
   std::cin >> value;
 
-  // Handle if the previous operation failed
+  // Handle if the previous operation failed.
   if (!std::cin) {
-    // If the failure was because the input stream was closed, gently print a
-    // new line and shutdown the program.
+    /* *
+     * If the failure was because the input stream was closed, gently print a
+     * new line and shutdown the program.
+     * */
     if (std::cin.eof()) {
       std::cout << std::endl;
       exit(0);
