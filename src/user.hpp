@@ -10,8 +10,8 @@
  *  User ahnaf = User("ahnaf", "ahnaf@example.com", "it_is_secret");
  */
 
-#ifndef USER_H
-#define USER_H
+#ifndef USER_HPP
+#define USER_HPP
 
 #include <string>
 

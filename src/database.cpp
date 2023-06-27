@@ -1,9 +1,9 @@
-#include "database.h"
+#include "database.hpp"
 
 #include <fstream>
 #include <iostream>
 
-#include "utils.h"
+#include "utils.hpp"
 
 Database::Database(std::string data_file) {
   this->data_file = data_file;

@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "database.h"
-#include "user.h"
-#include "utils.h"
+#include "database.hpp"
+#include "user.hpp"
+#include "utils.hpp"
 
 int main(void) {
   Database db = Database("./database.json");

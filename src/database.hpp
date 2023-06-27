@@ -14,13 +14,13 @@
  *  db.save();
  */
 
-#ifndef DATABASE_H
-#define DATABASE_H
+#ifndef DATABASE_HPP
+#define DATABASE_HPP
 
 #include <string>
 
-#include "nlohmann/json.hpp"
-#include "user.h"
+#include "../lib/nlohmann_json/single_include/nlohmann/json.hpp"
+#include "user.hpp"
 
 class Database {
  private:

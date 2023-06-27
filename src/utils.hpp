@@ -2,12 +2,12 @@
  * This file contains some utilities.
  */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef UTILS_HPP
+#define UTILS_HPP
 
 #include <functional>
 
-#include "nlohmann/json.hpp"
+#include "../lib/nlohmann_json/single_include/nlohmann/json.hpp"
 
 namespace utils {
 /* *
