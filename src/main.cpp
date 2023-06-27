@@ -5,7 +5,7 @@
 #include "utils.hpp"
 
 int main(void) {
-  Database db = Database("./database.json");
+  Database db = Database("../example_db.json");
 
   char answer;
   std::string email, password;
