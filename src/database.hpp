@@ -19,7 +19,7 @@
 
 #include <string>
 
-#include "../lib/nlohmann_json/single_include/nlohmann/json.hpp"
+#include "nlohmann/json.hpp"
 #include "user.hpp"
 
 class Database {
