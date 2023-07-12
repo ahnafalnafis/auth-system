@@ -4,3 +4,6 @@ lib
 # CMake generated compiler flags for clangd
 .cache
 compile_commands.json
+
+.vscode/**
+CMakeFiles/**
