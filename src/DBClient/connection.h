@@ -2,11 +2,13 @@
 #define CONNECTION_HPP
 
 #include <string>
+#include <stdint.h>
 
 // Full list of databases supported by this project
-enum DB_TYPES {
+enum DB_TYPES : uint8_t {
 
-  MongoDB
+  MongoDB, 
+  Mock
 
 };
 
@@ -31,18 +33,23 @@ class Connection {
    * */
 
   // Connection functions
-  virtual int openConnection() = 0;
-  virtual int closeConnection() = 0;
+  virtual uint16_t openConnection() = 0;
+  virtual uint16_t closeConnection() = 0;
 
   // Functions for managing underlying user data structures
-  virtual int initializeAuthStructureInDB() = 0;
-  virtual int destroyAuthStructureInDB() = 0;
+  virtual uint16_t initializeAuthStructureInDB() = 0;
+  virtual uint16_t destroyAuthStructureInDB() = 0;
 
   // Functions for managing user data in the DB
-  virtual int queryByUniqueIdentifier(std::string identifier) = 0;
-  virtual int addUserToDB(UserData userData);
-  virtual int deleteUserFromDB(std::string identifier) = 0;
-  virtual int wipeAllUserDataFromDB() = 0;
+  virtual UserData queryByUniqueIdentifier(std::string identifier) = 0;
+  virtual uint16_t addUserToDB(UserData userData) = 0;
+  virtual uint16_t deleteUserFromDB(std::string identifier) = 0;
+  virtual uint16_t wipeAllUserDataFromDB() = 0;
+
+  virtual DB_TYPES getConnectionType() = 0;
+
+  // Base case destructor
+  virtual ~Connection() {};
 
  private:
   /* *
@@ -50,7 +57,7 @@ class Connection {
    * connected to
    * */
 
-  DB_TYPES connectionType;
+  DB_TYPES _connectionType;
 };
 
 #endif
