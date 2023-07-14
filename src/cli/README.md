@@ -1,1 +1,0 @@
-# This is the directory for the Command Line Interface (CLI) which we can use to test the program outside of its intended context (a web app)
