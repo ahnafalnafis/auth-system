@@ -1,24 +1,18 @@
 /*
- * This file contains some utilities.
+ * Copyright 2023 Ahnaf Al Nafis
+ * License: MIT
  */
 
-#ifndef UTILS_HPP
-#define UTILS_HPP
-
-#include <functional>
+#ifndef SRC_UTILS_HPP_
+#define SRC_UTILS_HPP_
 
 #include "nlohmann/json.hpp"
 
 namespace utils {
-/* *
- * ForEach function is used to iterate through a JSON data and meanwhile call
- * the callback function. While iterating through, ForEach function will pass
- * each iterator from the JSON data to the callback function. So that the
- * callback function can perform some operation with the iterator.
- * */
 
-void ForEach(nlohmann::json &data,
-             std::function<bool(nlohmann::json::iterator)> callback);
+// To load configurations from configuration file.
+nlohmann::json LoadConfig();
+
 }  // namespace utils
 
-#endif
+#endif  // SRC_UTILS_HPP_

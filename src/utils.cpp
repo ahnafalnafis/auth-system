@@ -1,12 +1,17 @@
+/*
+ * Copyright 2023 Ahnaf Al Nafis
+ * License: MIT
+ */
+
 #include "utils.hpp"
 
-void utils::ForEach(nlohmann::json &data,
-                    std::function<bool(nlohmann::json::iterator)> callback) {
-  bool ok;
-  for (auto i = data.begin(); i != data.end(); ++i) {
-    ok = callback(i);
-    if (ok) {
-      break;
-    }
-  }
+#include <fstream>
+
+#include "nlohmann/json.hpp"
+
+nlohmann::json utils::LoadConfig() {
+  return nlohmann::json::parse(std::ifstream("./config.json"),
+                               /* callback */ nullptr,
+                               /* allow_exceptions */ true,
+                               /*ignore_comments */ true);
 }
