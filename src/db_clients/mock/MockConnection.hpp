@@ -1,7 +1,7 @@
-/* *
- * Copyright 2023 mfrandev
- * License: MIT
- * */
+/**
+ * Copyright (C) 2023 Ahnaf Al Nafis
+ * SPDX-License-Identifier: MIT
+ */
 
 #ifndef SRC_DB_CLIENTS_MOCK_MOCKCONNECTION_HPP_
 #define SRC_DB_CLIENTS_MOCK_MOCKCONNECTION_HPP_

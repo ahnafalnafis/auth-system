@@ -1,6 +1,6 @@
-/*
- * Copyright 2023 Ahnaf Al Nafis
- * License: MIT
+/**
+ * Copyright (C) 2023 Ahnaf Al Nafis
+ * SPDX-License-Identifier: MIT
  */
 
 #ifndef SRC_UTILS_HPP_

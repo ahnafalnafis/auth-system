@@ -1,7 +1,8 @@
-/* *
- * Copyright 2023 Ahnaf Al Nafis
- * License: MIT
- * */
+/**
+ * Copyright (C) 2023 Ahnaf Al Nafis
+ * SPDX-License-Identifier: MIT
+ */
+
 #include "connection.hpp"
 
 #include "../utils.hpp"
