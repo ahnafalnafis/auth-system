@@ -62,13 +62,13 @@ about them.
 
 ```
 .
+├── bin/                        # Binaries (ignore).
 ├── build/                      # Build files (ignore).
-├── lib/                        # Libraries (ignore).
-├── src/                        # Project source code (see src/README.md)
-├── .clang-format               # Code formatting settings.
-├── CMakeLists.txt              # Generates build files.
-├── compile_commands.json       # Compilation database (ignore).
-└── example_db.json             # This is where the data will be stored.
+├── examples/                   # Examples.
+├── external/                   # External libraries (ignore).
+├── src/                        # Project source code (see src/README.md).
+├── tests/                      # Tests.
+└── tools/                      # Tools.
 ```
 
 ## Documenting
