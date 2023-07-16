@@ -5,9 +5,6 @@
 
 #include "connection.hpp"
 
-#include "../utils.hpp"
-
-auto config = utils::LoadConfig();
-
-Connection::Connection() { this->db_file = config["db_file"]; }
+Connection::Connection() {}
+Connection::~Connection() {}
 DBTypes Connection::getConnectionType() { return this->_connection_type; }
