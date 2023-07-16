@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Colors:
+c_red='\e[0;31m'
+c_b_red='\e[1;31m'
+c_clr='\e[0m'
+
+bold_red_text() {
+  echo -ne $c_b_red
+  echo -ne $1
+  echo -e $c_clr
+}
+
+[ ! -d external ] && mkdir -pv external/nlohmann_json/include/nlohmann/
+
+if [ ! -f external/nlohmann_json/include/nlohmann/json.hpp ]; then
+  if command -v curl > /dev/null 2>&1; then
+    curl -Lo external/nlohmann_json/include/nlohmann/json.hpp \
+      https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+  else
+    bold_red_text "Command not found: curl"
+  fi
+fi
