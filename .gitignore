@@ -10,6 +10,7 @@ compile_commands.json
 
 # External libraries
 external
+vgcore*
 
 # Text editor specific files
 .vscode
