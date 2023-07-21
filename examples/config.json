@@ -1,4 +1,12 @@
 {
-  "db_type": "PostgreSQL",
-  "configured": false
+  "database.type": "PostgreSQL",
+  "database.configured": true,
+  "database.config": {
+    "PostgreSQL": {
+      "tablename": "example_users",
+      "connection.string": {
+        "dbname": "example"
+      }
+    }
+  }
 }
