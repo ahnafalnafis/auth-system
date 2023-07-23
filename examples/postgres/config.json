@@ -6,7 +6,7 @@
       "connection.string": {
         "dbname": "example"
       },
-      "user_data_structure": "./examples/postgres-config/user_data_structure.sql"
+      "user_data_structure": "./examples/postgres/user_data_structure.sql"
     }
   }
 }
