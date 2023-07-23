@@ -7,23 +7,24 @@
 #define SRC_DB_CLIENTS_CONNECTION_HPP_
 
 #include <cstdint>
+#include <pqxx/pqxx>  // PostgreSQL driver
 #include <string>
 #include <string_view>
 
+#include "nlohmann/json.hpp"
+
 // Status codes:
-enum Status : uint16_t { SUCCESS, FAIL };
+enum Status : uint16_t { SUCCESS, FAIL, DB_IS_NOT_CONFIGURED };
 
 // Supported databases:
-enum DBTypes : uint16_t { MongoDB, PostgreSQL };
+enum DBTypes : uint16_t { PostgreSQL };
 
 struct UserData {
   std::string id;
   std::string password;
-  // TODO(ahnafalnafis): implement date_created
 };
 
-/* *
- * This class provides functions for each individual database connection class
+/* * This class provides functions for each individual database connection class
  * to implement
  * */
 class Connection {
@@ -34,17 +35,16 @@ class Connection {
    * */
 
   DBTypes _connection_type;
-  std::string db_file;
 
  public:
   Connection();
   virtual ~Connection();
 
-  virtual DBTypes getConnectionType() = 0;
+  DBTypes getConnectionType();
 
   // Connection functions.
-  virtual Status openConnection() = 0;
-  virtual Status closeConnection() = 0;
+  virtual Status open(const nlohmann::json &config) = 0;
+  virtual Status close() = 0;
 
   // Functions for managing underlying user data structures.
   virtual Status initializeAuthStructure() = 0;
@@ -56,6 +56,30 @@ class Connection {
   virtual Status deleteUser(std::string_view id) = 0;
   UserData queryByID(std::string_view id) const;
   virtual Status wipeAlldata() = 0;
+};
+
+class PostgreSQLConnection : public Connection {
+ private:
+  // By default PostgreSQL tries to find dbname by user's name which throws an
+  // exception. To prevent this unexpected behavior, set the dbname to
+  // postgres. Since this dbname exists since PostgreSQL is installed.
+  //
+  // TODO: Please find a better way to do this.
+  pqxx::connection connection{"dbname=postgres"};
+
+ public:
+  PostgreSQLConnection();
+  ~PostgreSQLConnection();
+
+  Status open(const nlohmann::json &config);
+  Status close();
+  Status initializeAuthStructure();
+  Status destroyAuthStructure();
+
+  Status addUser(const UserData &user_data);
+  Status updateUser(const UserData &user_data);
+  Status deleteUser(std::string_view id);
+  Status wipeAlldata();
 };
 
 #endif  // SRC_DB_CLIENTS_CONNECTION_HPP_

@@ -1,20 +1,29 @@
 cmake_minimum_required(VERSION 3.15)
 
+# Compiler options:
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
+# Project:
 project(
   auth-system
   VERSION 0.0.2
   LANGUAGES CXX)
 
+# Declarations:
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
-set(LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+set(EXTERNAL_LIB_DIR ${PROJECT_SOURCE_DIR}/external)
+set(EXECUTABLE_NAME auth)
 
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-file(GLOB CPP_FILES "${SRC_DIR}/*.cpp" "${SRC_DIR}/db_clients/*.cpp")
-add_executable(authenticate ${CPP_FILES})
+# Executable:
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+add_executable(${EXECUTABLE_NAME})
 
-add_subdirectory(${LIB_DIR}/nlohmann_json)
-target_link_libraries(authenticate PRIVATE nlohmann_json::nlohmann_json)
+# Sub directories:
+add_subdirectory(${SRC_DIR})
+add_subdirectory(${EXTERNAL_LIB_DIR}/libpqxx)
+
+# Libraries:
+target_link_libraries(${EXECUTABLE_NAME} PRIVATE pqxx)
+include_directories(${EXTERNAL_LIB_DIR}/nlohmann_json/include)

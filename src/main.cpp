@@ -1,42 +1,24 @@
+/**
+ * Copyright (C) 2023 Ahnaf Al Nafis
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <fstream>
 #include <iostream>
+#include <nlohmann/json.hpp>
 
-#include "database.hpp"
-#include "user.hpp"
-#include "utils.hpp"
+#include "db_clients/connection.hpp"
 
-int main(void) {
-  Database db = Database("../example_db.json");
+int main(int argc, char *argv[]) {
+  auto config = nlohmann::json::parse(std::ifstream("./examples/config.json"),
+                                      /* callback */ nullptr,
+                                      /* allow_exceptions */ true,
+                                      /* ignore_comments */ true);
 
-  char answer;
-  std::string email, password;
+  PostgreSQLConnection psqlc;
+  Connection *connection = &psqlc;
+  connection->open(config);
 
-  // Confirmation:
-  std::cout << "Do you have an account? [y/n]: ";
-  std::cin >> answer;
-
-  std::cout << "Email: ";
-  std::cin >> email;
-
-  std::cout << "Password: ";
-  std::cin >> password;
-
-  User user = User("", email, password);
-
-  if (answer == 'y') {
-    if (!db.exists(user)) {
-      std::cout << "Sorry, this account does not exist.\n";
-    }
-  } else {
-    std::string username;
-
-    std::cout << "Give a username: ";
-    std::cin >> username;
-    user.setUserName(username);
-
-    db.createUser(user);
-  }
-
-  std::cout << "Successfully logged in.\n";
-  db.save();
+  connection->close();
   return 0;
 }
