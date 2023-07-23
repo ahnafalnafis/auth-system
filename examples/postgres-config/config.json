@@ -3,10 +3,10 @@
   "database.configured": true,
   "database.config": {
     "PostgreSQL": {
-      "tablename": "example_users",
       "connection.string": {
         "dbname": "example"
-      }
+      },
+      "user_data_structure": "./examples/postgres-config/user_data_structure.sql"
     }
   }
 }
