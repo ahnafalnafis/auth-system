@@ -2,7 +2,7 @@
 
 Language: Cpp
 
-AccessModifierOffset: 1
+AccessModifierOffset: -1
 
 AlignAfterOpenBracket: BlockIndent
 AlignArrayOfStructures: Left
@@ -106,7 +106,7 @@ IncludeCategories:
 IncludeIsMainRegex: "([-_](test|unittest))?$"
 IncludeIsMainSourceRegex: ""
 
-IndentAccessModifiers: true
+IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExternBlock: Indent
