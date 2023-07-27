@@ -1,32 +1,7 @@
-# Login and Registration system
+# Authentication system
 
-A simple Login and Registration system made with C++. This is my second C++
-project as a beginner.
-
-## Examples
-
-Registration:
-
-```
-$ ./bin/app
-Do you have an account? [y/n]: n
-Email: ahnafan@gmail.com
-Password: 12312
-Give a username: ahnafnafis
-Username has been updated.
-Account has been created successfully.
-Successfully logged in.
-```
-
-Login:
-
-```
-$ ./bin/app
-Do you have an account? [y/n]: y
-Email: ahnafan@gmail.com
-Password: 12312
-Successfully logged in.
-```
+A simple user authentication system which provides APIs for C++ to
+authenticate users. For now it only supports a database PostgreSQL.
 
 ## Contributing
 
