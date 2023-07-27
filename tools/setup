@@ -1,23 +1,72 @@
 #!/usr/bin/env bash
 
+lib=""
+
 # Colors:
-c_red='\e[0;31m'
-c_b_red='\e[1;31m'
-c_clr='\e[0m'
+c_bold_red='\e[1;31m'
+c_bold_green='\e[1;32m'
+c_bold_yellow='\e[1;33m'
+c_bold_cyan='\e[1;36m'
+c_clear='\e[0m'
 
 bold_red_text() {
-  echo -ne $c_b_red
-  echo -ne $1
-  echo -e $c_clr
+  echo -e "${c_bold_red}$@${c_clear}"
+}
+bold_green_text() {
+  echo -e "${c_bold_green}$@${c_clear}"
+}
+bold_yellow_text() {
+  echo -e "${c_bold_yellow}$@${c_clear}"
+}
+bold_cyan_text() {
+  echo -e "${c_bold_cyan}$@${c_clear}"
 }
 
-[ ! -d external ] && mkdir -pv external/nlohmann_json/include/nlohmann/
+INFO() {
+  bold_yellow_text "INFO: ${c_clear}$@"
+}
 
-if [ ! -f external/nlohmann_json/include/nlohmann/json.hpp ]; then
+if [ ! -d external ]; then
+  mkdir -pv external > /dev/null 2>&1
+  bold_green_text "Created 'external' directory."
+fi
+
+
+lib="https://github.com/nlohmann/json"
+
+if [ -f external/nlohmann_json/include/nlohmann/json.hpp ]; then
+  INFO "'$lib' already exists."
+else
+  [ ! -d external/nlohmann_json/include/nlohmann ] &&
+    mkdir -pv external/nlohmann_json/include/nlohmann > /dev/null 2>&1
+
+  bold_cyan_text "Installing '$lib'..."
+
   if command -v curl > /dev/null 2>&1; then
     curl -Lo external/nlohmann_json/include/nlohmann/json.hpp \
-      https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp
+      https://raw.githubusercontent.com/nlohmann/json/develop/single_include/nlohmann/json.hpp \
+
+    bold_green_text "Installed '$lib'."
   else
     bold_red_text "Command not found: curl"
+    bold_red_text "Could not install '$lib'"
   fi
 fi
+
+
+lib="https://github.com/jtv/libpqxx"
+
+if [ -d external/libpqxx ]; then
+    INFO "'$lib' already exists."
+else
+  bold_cyan_text "Installing '$lib'..."
+
+  if command -v git > /dev/null 2>&1; then
+    git clone https://github.com/jtv/libpqxx external/libpqxx
+    bold_green_text "Installed '$lib'."
+  else
+    bold_red_text "Command not found: git"
+    bold_red_text "Could not install '$lib'"
+  fi
+fi
+
