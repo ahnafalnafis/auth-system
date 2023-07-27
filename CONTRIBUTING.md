@@ -68,6 +68,7 @@ about them.
 ├── build/                      # Build files (ignore).
 ├── examples/                   # Examples.
 ├── external/                   # External libraries (ignore).
+├── include/                    # Public header files.
 ├── src/                        # Project source code (see src/README.md).
 ├── tests/                      # Tests.
 └── tools/                      # Tools.
