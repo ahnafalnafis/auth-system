@@ -1,2 +1,2 @@
-target_sources(${EXECUTABLE_NAME} PRIVATE main.cpp)
-add_subdirectory(db_clients)
+target_sources(${EXECUTABLE_NAME} PRIVATE main.cpp utils.cpp)
+add_subdirectory(connection)

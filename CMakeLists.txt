@@ -27,3 +27,6 @@ add_subdirectory(${EXTERNAL_LIB_DIR}/libpqxx)
 # Libraries:
 target_link_libraries(${EXECUTABLE_NAME} PRIVATE pqxx)
 include_directories(${EXTERNAL_LIB_DIR}/nlohmann_json/include)
+
+# Include directories:
+include_directories(include)
