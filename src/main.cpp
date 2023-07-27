@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     connection->open();
     connection->initializeAuthStructure();
 
-    connection->addUser({{"email", "ahnafaknafis@gmail.com"},
+    connection->addUser({{"email", "ahnafalnafis@gmail.com"},
                          {"password", "kaasdkj"},
                          {"date_created", "2022-01-12 06:01:40"}});
 
