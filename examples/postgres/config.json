@@ -4,9 +4,11 @@
   "database.config": {
     "PostgreSQL": {
       "connection.string": {
-        "dbname": "example"
+        "dbname": "mock"
       },
-      "user_data_structure": "./examples/postgres/user_data_structure.sql"
+      "table.name": "mock_users",
+      "table.initializer": "./examples/postgres/table_initializer.sql",
+      "table.destroyer": "./examples/postgres/table_destroyer.sql"
     }
   }
 }
