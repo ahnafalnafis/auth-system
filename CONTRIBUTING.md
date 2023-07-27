@@ -10,8 +10,10 @@ instructions to help you get started.
 - [Getting started](#getting-started)
   - [Project structure](#project-structure)
 - [Documenting](#documenting)
+- [Commit messages](#commit-messages)
 - [Style guidelines](#style-guidelines)
 - [Development environment setup](#development-environment-setup)
+- [Compilation and program execution](#compilation-and-program-execution)
 
 ## Ways to contribute
 
@@ -127,65 +129,64 @@ Following this convention helps to maintain a clean and meaningful commit
 history, making it easier for everyone to understand and navigate the
 project's development.
 
+Adding emojis in commit messages is optional but highly encouraged.
+
 **Additional resources:**
 
 - [How to Write Good Commit Messages: A Practical Git Guide](https://www.freecodecamp.org/news/writing-good-commit-messages-a-practical-guide/)
+- [Gitmoji](https://gitmoji.dev/)
 
 ## Style guidelines
 
 We follow
 [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html).
-It helps other contributors to understand one's code. We have
-[clang-format](https://clang.llvm.org/docs/ClangFormat.html) (A C++ code
-formatter) included in the project with a configuration file
-([.clang-format](.clang-format)) that follows Google's C++ style guide. If you
-use other formatting tool, make sure that it follows Google's style guide.
+It helps other contributors to understand one's code.
+
+**Code formatting:** We have
+[clang-format](https://clang.llvm.org/docs/ClangFormat.html) (A code formatter
+for C++) included in the project with a configuration file
+([.clang-format](.clang-format)) that follows the our own code formatting
+rules. If you use other formatting tool, make sure that it follows our code
+formatting rules.
 
 ## Development environment setup
 
 After cloning the repository, navigate to it and run these. This snippet below
-will create `build/` and `lib/` which is required for development and will
-install a [JSON](https://github.com/nlohman/json) parser library into the
-`lib/` folder.
+will create `build/` and `external/` which is required for development and
+will install couple of libraries into the `external/` folder.
 
 ```sh
 mkdir build
-mkdir lib
+mkdir external
+chmod +x ./tools/setup
 
 # Installing dependencies
-git clone https://github.com/nlohman/json lib/nlohmann_json
+./tools/setup
 
 # To check whether the library is installed or not.
-ls lib
+ls external
 ```
 
-### Compile and run the program
+## Compilation and program execution
 
 We use [CMake](https://cmake.org) to generate build files for our program. To
-generate build files, navigate to the `build/` folder and run CMake.
-
-```sh
-cd build
-cmake ..
-```
+generate build files, run `cmake -B build/`.
 
 You will see bunch of build files have been generated. For now, it will
 generate build files for [GNU Make](https://www.gnu.org/software/make).
 
-Finally, run `make` to compile the program. The compiled binary will be in the
-`bin/` folder. To run the binary, run `./bin/authenticate`.
+Finally, run `make -C build/` to compile the program. The compiled binary will
+be in the `bin/` folder. To run the binary, run `./bin/auth`.
 
 All together:
 
 ```sh
-cd build
-
-# Do not run cmake unless you change CMakeLists.txt
-cmake ..
+# Do not run CMake unless you change any of the CMakeLists.txt
+cmake -B build/
 
 # Do not run make unless you change files of src directory
-make
+make -C build/
 
 # To run the program
-./bin/authenticate
+./bin/auth
 ```
