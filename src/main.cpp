@@ -5,20 +5,37 @@
 
 #include <fstream>
 #include <iostream>
-#include <nlohmann/json.hpp>
 
-#include "db_clients/connection.hpp"
+#include "connection.hpp"
+#include "nlohmann/json.hpp"
+#include "status.hpp"
 
 int main(int argc, char *argv[]) {
-  auto config = nlohmann::json::parse(std::ifstream("./examples/config.json"),
-                                      /* callback */ nullptr,
-                                      /* allow_exceptions */ true,
-                                      /* ignore_comments */ true);
+  auto config =
+    nlohmann::json::parse(std::ifstream("./examples/postgres/config.json"),
+                          /* callback */ nullptr,
+                          /* allow_exceptions */ true,
+                          /* ignore_comments */ true);
 
-  PostgreSQLConnection psqlc;
-  Connection *connection = &psqlc;
-  connection->open(config);
+  if (config["database.configured"]) {
+    auto psqlc = PostgreSQLConnection(config["database.config"]["PostgreSQL"]);
+    auto *connection = &psqlc;
 
-  connection->close();
-  return 0;
+    connection->open();
+    connection->initializeAuthStructure();
+
+    connection->addUser({{"email", "ahnafaknafis@gmail.com"},
+                         {"password", "kaasdkj"},
+                         {"date_created", "2022-01-12 06:01:40"}});
+
+    connection->deleteUser("4");
+    connection->updateUser("2",
+                           {{"email", "nobody@nowhere.com"},
+                            {"password", "nothing"},
+                            {"date_created", "2022-01-12 08:01:40"}});
+
+    connection->close();
+  }
+
+  return SUCCESS;
 }
