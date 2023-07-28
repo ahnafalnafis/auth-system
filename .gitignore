@@ -15,5 +15,3 @@ vgcore*
 # Text editor specific files
 .vscode
 Session.vim
-
-mock_data*
