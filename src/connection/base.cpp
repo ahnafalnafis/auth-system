@@ -5,8 +5,6 @@
 
 #include "base.hpp"
 
-#include <string_view>
-
 #include "nlohmann/json.hpp"  // For JSON data structure
 
 using Json = nlohmann::json;

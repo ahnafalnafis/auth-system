@@ -24,15 +24,16 @@ int main(int argc, char *argv[]) {
     connection->open();
     connection->initializeAuthStructure();
 
-    connection->addUser({{"email", "ahnafalnafis@gmail.com"},
-                         {"password", "kaasdkj"},
-                         {"date_created", "2022-01-12 06:01:40"}});
+    connection->addUser({{"email", "ahah"},
+                         {"password", "asdkaksd"},
+                         {"date_created", "2023-12-12 12:12:00"}});
 
-    connection->deleteUser("4");
-    connection->updateUser("2",
-                           {{"email", "nobody@nowhere.com"},
-                            {"password", "nothing"},
-                            {"date_created", "2022-01-12 08:01:40"}});
+    connection->updateUser({{"id", "3"}},
+                           {{"email", "jdlkajsdklas"},
+                            {"password", "asdkaksd"},
+                            {"date_created", "2023-12-12 12:12:00"}});
+
+    connection->deleteUser({{"id", "1"}});
 
     connection->close();
   }

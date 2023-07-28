@@ -7,7 +7,6 @@
 #define SRC_CONNECTION_BASE_HPP_
 
 #include <cstdint>
-#include <string_view>
 
 #include "nlohmann/json.hpp"  // For JSON data structure
 #include "status.hpp"         // For Status codes
@@ -48,10 +47,10 @@ class BaseConnection {
 
   // Functions for managing user data in the database.
   virtual Status addUser(const UserData &user_data) = 0;
-  virtual Status updateUser(std::string_view id,
+  virtual Status updateUser(const Json &condition,
                             const UserData &user_data) = 0;
-  virtual Status deleteUser(std::string_view id) = 0;
-  UserData queryByID(std::string_view id) const;
+  virtual Status deleteUser(const Json &condition) = 0;
+  UserData queryByID(const Json &condition) const;
   virtual Status wipeAlldata() = 0;
 };
 

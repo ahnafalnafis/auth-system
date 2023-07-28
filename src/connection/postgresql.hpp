@@ -7,7 +7,6 @@
 #define SRC_CONNECTION_POSTGRESQL_HPP_
 
 #include <string>
-#include <string_view>
 
 #include "base.hpp"           // For BaseConnection
 #include "nlohmann/json.hpp"  // For JSON data structure
@@ -39,8 +38,8 @@ class PostgreSQLConnection: public BaseConnection {
   Status destroyAuthStructure();
 
   Status addUser(const UserData &user_data);
-  Status updateUser(std::string_view id, const UserData &user_data);
-  Status deleteUser(std::string_view id);
+  Status updateUser(const Json &condition, const UserData &user_data);
+  Status deleteUser(const Json &condition);
   Status wipeAlldata();
 };
 
