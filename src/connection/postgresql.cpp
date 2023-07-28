@@ -6,7 +6,6 @@
 #include "postgresql.hpp"
 
 #include <string>
-#include <string_view>
 
 #include "../utils.hpp"       // For utility functions
 #include "base.hpp"           // For BaseConnection
@@ -26,19 +25,11 @@ PostgreSQLConnection::PostgreSQLConnection(const Json &config)
 PostgreSQLConnection::~PostgreSQLConnection() {}
 
 Status PostgreSQLConnection::open() {
-  auto connection_string = std::string();
-  auto pg_config = &this->config["connection.string"];
-
-  /**
-   * To convert {"key": "value"} to key=value because pqxx::connection
-   * need to set options.
-   */
-  for (auto i = pg_config->begin(); i != pg_config->end(); i++) {
-    connection_string += i.key() + "=" + i.value().get<std::string>() + " ";
-  }
-
   // Connecting to the PostgreSQL socket.
-  this->connection = pqxx::connection(connection_string);
+  this->connection = pqxx::connection(
+    utils::join(/* object */ this->config["connection.string"],
+                /* delimiter */ " ",
+                /* sub_delimiter */ "="));
 
   return SUCCESS;
 }
@@ -52,7 +43,7 @@ Status PostgreSQLConnection::initializeAuthStructure() {
   auto work = pqxx::work(this->connection);
 
   work.exec(
-    utils::ReadFile(this->config["table.initializer"].get<std::string>()));
+    utils::readFile(this->config["table.initializer"].get<std::string>()));
   work.commit();
 
   return SUCCESS;
@@ -62,7 +53,7 @@ Status PostgreSQLConnection::destroyAuthStructure() {
   auto work = pqxx::work(this->connection);
 
   work.exec(
-    utils::ReadFile(this->config["table.destroyer"].get<std::string>()));
+    utils::readFile(this->config["table.destroyer"].get<std::string>()));
   work.commit();
 
   return SUCCESS;
@@ -90,31 +81,36 @@ Status PostgreSQLConnection::addUser(const UserData &user_data) {
   return SUCCESS;
 }
 
-Status PostgreSQLConnection::updateUser(std::string_view id,
+Status PostgreSQLConnection::updateUser(const Json &condition,
                                         const UserData &user_data) {
   auto work = pqxx::work(this->connection);
-  auto pairs = std::string();
+  auto updates = utils::join(/* object */ user_data,
+                             /* delimiter */ ", ",
+                             /* sub_delimiter */ " = ",
+                             /* key_wrapper */ "",
+                             /* value_wrapper */ "'");
 
-  for (auto i = user_data.begin(); i != user_data.end(); i++) {
-    if (i != user_data.begin() && i != user_data.end()) {
-      pairs.append(", ");
-    }
-    pairs.append(i.key() + " = " + "'" + i.value().get<std::string>() + "'");
-  }
-
-  work.exec("update " + this->table_name + " set " + pairs +
-            " where id = " + std::string(id));
+  work.exec("update " + this->table_name + " set " + updates + " where " +
+            utils::join(/* object */ condition,
+                        /* delimiter */ ", ",
+                        /* sub_delimiter */ " = ",
+                        /* key_wrapper */ "",
+                        /* value_wrapper */ "'"));
 
   work.commit();
 
   return SUCCESS;
 }
 
-Status PostgreSQLConnection::deleteUser(std::string_view id) {
+Status PostgreSQLConnection::deleteUser(const Json &condition) {
   auto work = pqxx::work(this->connection);
 
-  work.exec("delete from " + this->table_name +
-            " where id = " + std::string(id));
+  work.exec("delete from " + this->table_name + " where " +
+            utils::join(/* object */ condition,
+                        /* delimiter */ ", ",
+                        /* sub_delimiter */ " = ",
+                        /* key_wrapper */ "",
+                        /* value_wrapper */ "'"));
   work.commit();
 
   return SUCCESS;
