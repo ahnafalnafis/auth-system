@@ -5,13 +5,15 @@
 
 #include "postgresql.hpp"
 
+#include <exception>
+#include <iostream>
 #include <string>
 
-#include "../utils.hpp"       // For utility functions
-#include "base.hpp"           // For BaseConnection
-#include "nlohmann/json.hpp"  // For JSON data structure
-#include "pqxx/pqxx"          // For PostgreSQL database driver
-#include "status.hpp"         // For status codes
+#include "../utils.hpp"           // For utility functions
+#include "auth/status_codes.hpp"  // For status codes
+#include "base.hpp"               // For BaseConnection
+#include "nlohmann/json.hpp"      // For JSON data structure
+#include "pqxx/pqxx"              // For PostgreSQL database driver
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
@@ -59,6 +61,10 @@ Status PostgreSQLConnection::destroyAuthStructure() {
   return SUCCESS;
 }
 
+Status PostgreSQLConnection::wipeAlldata() {
+  return SUCCESS;
+}
+
 Status PostgreSQLConnection::addUser(const UserData &user_data) {
   auto work = pqxx::work(this->connection);
 
@@ -81,7 +87,21 @@ Status PostgreSQLConnection::addUser(const UserData &user_data) {
   return SUCCESS;
 }
 
-Status PostgreSQLConnection::updateUser(const Json &condition,
+Status PostgreSQLConnection::deleteUser(const Json &identifiers) {
+  auto work = pqxx::work(this->connection);
+
+  work.exec("delete from " + this->table_name + " where " +
+            utils::join(/* object */ identifiers,
+                        /* delimiter */ " and ",
+                        /* sub_delimiter */ " = ",
+                        /* key_wrapper */ "",
+                        /* value_wrapper */ "'"));
+  work.commit();
+
+  return SUCCESS;
+}
+
+Status PostgreSQLConnection::updateUser(const Json &identifiers,
                                         const UserData &user_data) {
   auto work = pqxx::work(this->connection);
   auto updates = utils::join(/* object */ user_data,
@@ -91,26 +111,12 @@ Status PostgreSQLConnection::updateUser(const Json &condition,
                              /* value_wrapper */ "'");
 
   work.exec("update " + this->table_name + " set " + updates + " where " +
-            utils::join(/* object */ condition,
-                        /* delimiter */ ", ",
+            utils::join(/* object */ identifiers,
+                        /* delimiter */ " and ",
                         /* sub_delimiter */ " = ",
                         /* key_wrapper */ "",
                         /* value_wrapper */ "'"));
 
-  work.commit();
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::deleteUser(const Json &condition) {
-  auto work = pqxx::work(this->connection);
-
-  work.exec("delete from " + this->table_name + " where " +
-            utils::join(/* object */ condition,
-                        /* delimiter */ ", ",
-                        /* sub_delimiter */ " = ",
-                        /* key_wrapper */ "",
-                        /* value_wrapper */ "'"));
   work.commit();
 
   return SUCCESS;
@@ -119,20 +125,21 @@ Status PostgreSQLConnection::deleteUser(const Json &condition) {
 UserData PostgreSQLConnection::queryUser(const Json &identifiers) {
   auto data = Json({});
 
-  auto work = pqxx::work(this->connection);
-  auto row = work.exec1("select * from " + this->table_name + " where " +
-                        utils::join(
-                          /* object */ identifiers,
-                          /* delimiter */ ", ",
-                          /* sub_delimiter */ " = "));
+  try {
+    auto work = pqxx::work(this->connection);
+    auto row = work.exec1("select * from " + this->table_name + " where " +
+                          utils::join(/* object */ identifiers,
+                                      /* delimiter */ " and ",
+                                      /* sub_delimiter */ " = ",
+                                      /* key_wrapper */ "",
+                                      /* value_wrapper */ "'"));
 
-  for (auto column : row) {
-    data += {column.name(), column.c_str()};
+    for (const auto &column : row) {
+      data += {column.name(), column.c_str()};
+    }
+  }
+  catch (const std::exception &error) {
   }
 
   return data;
-}
-
-Status PostgreSQLConnection::wipeAlldata() {
-  return SUCCESS;
 }

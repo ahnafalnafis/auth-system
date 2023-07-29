@@ -8,8 +8,8 @@
 
 #include <cstdint>
 
-#include "nlohmann/json.hpp"  // For JSON data structure
-#include "status.hpp"         // For Status codes
+#include "auth/status_codes.hpp"  // For Status codes
+#include "nlohmann/json.hpp"      // For JSON data structure
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
@@ -44,14 +44,15 @@ class BaseConnection {
   // Functions for managing underlying user data structures.
   virtual Status initializeAuthStructure() = 0;
   virtual Status destroyAuthStructure() = 0;
+  virtual Status wipeAlldata() = 0;
 
   // Functions for managing user data in the database.
   virtual Status addUser(const UserData &user_data) = 0;
-  virtual Status updateUser(const Json &condition,
+  virtual Status deleteUser(const Json &identifiers) = 0;
+  virtual Status updateUser(const Json &identifiers,
                             const UserData &user_data) = 0;
-  virtual Status deleteUser(const Json &condition) = 0;
+
   virtual UserData queryUser(const Json &identifiers) = 0;
-  virtual Status wipeAlldata() = 0;
 };
 
 #endif  // SRC_CONNECTION_BASE_HPP_

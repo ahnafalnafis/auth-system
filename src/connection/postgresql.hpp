@@ -8,9 +8,10 @@
 
 #include <string>
 
-#include "base.hpp"           // For BaseConnection
-#include "nlohmann/json.hpp"  // For JSON data structure
-#include "pqxx/pqxx"          // For PostgreSQL database driver
+#include "auth/status_codes.hpp"  // For Status codes
+#include "base.hpp"               // For BaseConnection
+#include "nlohmann/json.hpp"      // For JSON data structure
+#include "pqxx/pqxx"              // For PostgreSQL database driver
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
@@ -36,12 +37,13 @@ class PostgreSQLConnection: public BaseConnection {
 
   Status initializeAuthStructure();
   Status destroyAuthStructure();
+  Status wipeAlldata();
 
   Status addUser(const UserData &user_data);
-  Status updateUser(const Json &condition, const UserData &user_data);
-  Status deleteUser(const Json &condition);
+  Status deleteUser(const Json &identifiers);
+  Status updateUser(const Json &identifiers, const UserData &user_data);
+
   UserData queryUser(const Json &identifiers);
-  Status wipeAlldata();
 };
 
 #endif  // SRC_CONNECTION_POSTGRESQL_HPP_
