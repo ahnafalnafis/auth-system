@@ -35,6 +35,9 @@ int main(int argc, char *argv[]) {
 
     connection->deleteUser({{"id", "1"}});
 
+    auto data = connection->queryUser({{"id", "3"}});
+    std::cout << data << std::endl;
+
     connection->close();
   }
 

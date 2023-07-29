@@ -40,6 +40,7 @@ class PostgreSQLConnection: public BaseConnection {
   Status addUser(const UserData &user_data);
   Status updateUser(const Json &condition, const UserData &user_data);
   Status deleteUser(const Json &condition);
+  UserData queryUser(const Json &identifiers);
   Status wipeAlldata();
 };
 

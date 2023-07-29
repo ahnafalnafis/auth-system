@@ -50,7 +50,7 @@ class BaseConnection {
   virtual Status updateUser(const Json &condition,
                             const UserData &user_data) = 0;
   virtual Status deleteUser(const Json &condition) = 0;
-  UserData queryByID(const Json &condition) const;
+  virtual UserData queryUser(const Json &identifiers) = 0;
   virtual Status wipeAlldata() = 0;
 };
 

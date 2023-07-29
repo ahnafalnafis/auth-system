@@ -116,6 +116,23 @@ Status PostgreSQLConnection::deleteUser(const Json &condition) {
   return SUCCESS;
 }
 
+UserData PostgreSQLConnection::queryUser(const Json &identifiers) {
+  auto data = Json({});
+
+  auto work = pqxx::work(this->connection);
+  auto row = work.exec1("select * from " + this->table_name + " where " +
+                        utils::join(
+                          /* object */ identifiers,
+                          /* delimiter */ ", ",
+                          /* sub_delimiter */ " = "));
+
+  for (auto column : row) {
+    data += {column.name(), column.c_str()};
+  }
+
+  return data;
+}
+
 Status PostgreSQLConnection::wipeAlldata() {
   return SUCCESS;
 }
