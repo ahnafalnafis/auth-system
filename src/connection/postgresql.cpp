@@ -6,7 +6,6 @@
 #include "postgresql.hpp"
 
 #include <exception>
-#include <iostream>
 #include <string>
 
 #include "../utils.hpp"           // For utility functions
