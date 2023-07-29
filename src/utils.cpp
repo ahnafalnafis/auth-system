@@ -28,7 +28,7 @@ std::string utils::readFile(std::string_view file_name) {
   return content;
 }
 
-std::string utils::join(const nlohmann::json& object,
+std::string utils::join(const nlohmann::json &object,
                         std::string_view delimiter,
                         std::string_view sub_delimiter,
                         std::string_view key_wrapper,
