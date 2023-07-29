@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef INCLUDE_STATUS_HPP_
-#define INCLUDE_STATUS_HPP_
+#ifndef INCLUDE_AUTH_STATUS_CODES_HPP_
+#define INCLUDE_AUTH_STATUS_CODES_HPP_
 
 #include <cstdint>
 
 // Status codes:
 enum Status : uint16_t { SUCCESS, FAIL = 101 };
 
-#endif  // INCLUDE_STATUS_HPP_
+#endif  // INCLUDE_AUTH_STATUS_CODES_HPP_
