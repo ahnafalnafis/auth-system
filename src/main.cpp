@@ -6,40 +6,15 @@
 #include <fstream>
 #include <iostream>
 
+#include "auth.hpp"
 #include "connection.hpp"
 #include "nlohmann/json.hpp"
-#include "status.hpp"
 
 int main(int argc, char *argv[]) {
-  auto config =
-    nlohmann::json::parse(std::ifstream("./examples/postgres/config.json"),
-                          /* callback */ nullptr,
-                          /* allow_exceptions */ true,
-                          /* ignore_comments */ true);
+  auto ok = auth::Register({{"email", "ahnafalnafis@gmail.com"},
+                            {"password", "very_strong_password"},
+                            {"date_created", "2003-10-22 12:47:40"}});
 
-  if (config["database.configured"]) {
-    auto psqlc = PostgreSQLConnection(config["database.config"]["PostgreSQL"]);
-    auto *connection = &psqlc;
-
-    connection->open();
-    connection->initializeAuthStructure();
-
-    connection->addUser({{"email", "ahah"},
-                         {"password", "asdkaksd"},
-                         {"date_created", "2023-12-12 12:12:00"}});
-
-    connection->updateUser({{"id", "3"}},
-                           {{"email", "jdlkajsdklas"},
-                            {"password", "asdkaksd"},
-                            {"date_created", "2023-12-12 12:12:00"}});
-
-    connection->deleteUser({{"id", "1"}});
-
-    auto data = connection->queryUser({{"id", "3"}});
-    std::cout << data << std::endl;
-
-    connection->close();
-  }
-
+  std::cout << ok << std::endl;
   return SUCCESS;
 }
