@@ -3,19 +3,19 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef AUTH_HPP
-#define AUTH_HPP
+#ifndef INCLUDE_AUTH_HPP_
+#define INCLUDE_AUTH_HPP_
 
-#include "auth/status_codes.hpp"  // For status codes
-#include "nlohmann/json.hpp"      // For JSON data structure
+#include "auth/response.hpp"  // Response
+#include "nlohmann/json.hpp"  // nlohmann::json
 
 using UserData = nlohmann::json;
 
 namespace auth {
 
-  Status Login(const UserData &user_data);
-  Status Register(const UserData &user_data);
+  Response Login(const UserData &user_data);
+  Response Register(const UserData &user_data);
 
 }  // namespace auth
 
-#endif
+#endif  // INCLUDE_AUTH_HPP_

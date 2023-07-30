@@ -5,23 +5,24 @@
 
 #include "auth.hpp"
 
-#include <fstream>  // For ifstream
+#include <fstream>  // ifstream
 
-#include "auth/status_codes.hpp"  // For status codes
-#include "connection.hpp"         // For BaseConnection
-#include "nlohmann/json.hpp"      // For JSON data structure
+#include "auth/response.hpp"  // Response
+#include "connection.hpp"     // BaseConnection
+#include "nlohmann/json.hpp"  // nlohmann::json
 
+using Json = nlohmann::json;
 using UserData = nlohmann::json;
 
-auto config =
-  nlohmann::json::parse(std::ifstream("./examples/postgres/config.json"),
-                        /* callback */ nullptr,
-                        /* allow_exceptions */ true,
-                        /* ignore_comments */ true);
+// Load configuration from configuration file.
+auto config = Json::parse(std::ifstream("./examples/postgres/config.json"),
+                          /* callback */ nullptr,
+                          /* allow_exceptions */ true,
+                          /* ignore_comments */ true);
 
-Status auth::Register(const UserData &user_data) {
+Response auth::Register(const UserData &user_data) {
   if (!config["database.configured"]) {
-    return FAIL;
+    return Response(UNCONFIGURED_DATABASE);
   }
 
   auto psqlc = PostgreSQLConnection(config["database.config"]["PostgreSQL"]);
@@ -30,12 +31,19 @@ Status auth::Register(const UserData &user_data) {
   connection->open();
   connection->initializeAuthStructure();
 
-  if (!connection->queryUser(user_data).empty()) {
-    return FAIL;
+  auto query = connection->queryUser(user_data);
+
+  /**
+   * If something wrong happen while querying user, simply return the status
+   * code
+   */
+  if (query.status_code) {
+    return Response(query.status_code);
   }
 
   connection->addUser(user_data);
 
   connection->close();
-  return SUCCESS;
+
+  return Response();
 }
