@@ -9,18 +9,21 @@
 #include <string>
 #include <string_view>
 
-#include "nlohmann/json.hpp"
+#include "nlohmann/json.hpp"  // nlohmann::json
+
+using string = std::string;
+using string_view = std::string_view;
 
 namespace utils {
 
-  std::string readFile(std::string_view file_name);
+  string readFile(string_view file_name);
 
   // Joins annoying key value pairs together.
-  std::string join(const nlohmann::json &object,
-                   std::string_view delimiter = "",
-                   std::string_view sub_delimiter = "",
-                   std::string_view key_wrapper = "",
-                   std::string_view value_wrapper = "");
+  string join(const nlohmann::json &object,
+              string_view delimiter = "",
+              string_view sub_delimiter = "",
+              string_view key_wrapper = "",
+              string_view value_wrapper = "");
 
 }  // namespace utils
 
