@@ -3,142 +3,272 @@
  * SPDX-License-Identifier: MIT
  */
 
+// TODO: Add logging feature
+
 #include "postgresql.hpp"
 
 #include <exception>
 #include <string>
 
-#include "../utils.hpp"           // For utility functions
-#include "auth/status_codes.hpp"  // For status codes
-#include "base.hpp"               // For BaseConnection
-#include "nlohmann/json.hpp"      // For JSON data structure
-#include "pqxx/pqxx"              // For PostgreSQL database driver
+#include "../utils.hpp"       // utils::join, utils::readFile
+#include "auth/response.hpp"  // Response
+#include "base.hpp"           // BaseConnection
+#include "nlohmann/json.hpp"  // nlohmann::json
+#include "pqxx/pqxx"          // pqxx::connection, pqxx::work
 
+using string = std::string;
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
 
 PostgreSQLConnection::PostgreSQLConnection(const Json &config)
     : BaseConnection(config) {
   this->_connection_type = PostgreSQL;
-  this->table_name = this->config["table.name"].get<std::string>();
+  this->table_name = this->db_config["table.name"].get<string>();
 }
 
 PostgreSQLConnection::~PostgreSQLConnection() {}
 
-Status PostgreSQLConnection::open() {
-  // Connecting to the PostgreSQL socket.
-  this->connection = pqxx::connection(
-    utils::join(/* object */ this->config["connection.string"],
-                /* delimiter */ " ",
-                /* sub_delimiter */ "="));
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::close() {
-  this->connection.close();
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::initializeAuthStructure() {
-  auto work = pqxx::work(this->connection);
-
-  work.exec(
-    utils::readFile(this->config["table.initializer"].get<std::string>()));
-  work.commit();
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::destroyAuthStructure() {
-  auto work = pqxx::work(this->connection);
-
-  work.exec(
-    utils::readFile(this->config["table.destroyer"].get<std::string>()));
-  work.commit();
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::wipeAlldata() {
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::addUser(const UserData &user_data) {
-  auto work = pqxx::work(this->connection);
-
-  auto columns = std::string();
-  auto values = std::string();
-
-  for (auto i = user_data.begin(); i != user_data.end(); i++) {
-    if (i != user_data.begin() && i != user_data.end()) {
-      columns.append(", ");
-      values.append(", ");
-    }
-    columns.append(i.key());
-    values.append("'" + i.value().get<std::string>() + "'");
-  }
-
-  work.exec("insert into " + this->table_name + "(" + columns + ")" +
-            " values " + "(" + values + ")");
-  work.commit();
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::deleteUser(const Json &identifiers) {
-  auto work = pqxx::work(this->connection);
-
-  work.exec("delete from " + this->table_name + " where " +
-            utils::join(/* object */ identifiers,
-                        /* delimiter */ " and ",
-                        /* sub_delimiter */ " = ",
-                        /* key_wrapper */ "",
-                        /* value_wrapper */ "'"));
-  work.commit();
-
-  return SUCCESS;
-}
-
-Status PostgreSQLConnection::updateUser(const Json &identifiers,
-                                        const UserData &user_data) {
-  auto work = pqxx::work(this->connection);
-  auto updates = utils::join(/* object */ user_data,
-                             /* delimiter */ ", ",
-                             /* sub_delimiter */ " = ",
-                             /* key_wrapper */ "",
-                             /* value_wrapper */ "'");
-
-  work.exec("update " + this->table_name + " set " + updates + " where " +
-            utils::join(/* object */ identifiers,
-                        /* delimiter */ " and ",
-                        /* sub_delimiter */ " = ",
-                        /* key_wrapper */ "",
-                        /* value_wrapper */ "'"));
-
-  work.commit();
-
-  return SUCCESS;
-}
-
-UserData PostgreSQLConnection::queryUser(const Json &identifiers) {
-  auto data = Json({});
-
+Response PostgreSQLConnection::open() {
   try {
-    auto work = pqxx::work(this->connection);
-    auto row = work.exec1("select * from " + this->table_name + " where " +
-                          utils::join(/* object */ identifiers,
-                                      /* delimiter */ " and ",
-                                      /* sub_delimiter */ " = ",
-                                      /* key_wrapper */ "",
-                                      /* value_wrapper */ "'"));
+    /**
+     * Connection string requires space separated key value pairs. For example:
+     *    key1=value1 key2=value2
+     *
+     * Hence utils::join() is used to make key value pairs in such manner from
+     * a JSON key value pairs.
+     */
+    const auto &connection_string =
+      utils::join(/* object */ this->db_config["connection.string"],
+                  /* delimiter */ " ",
+                  /* sub_delimiter */ "=");
 
-    for (const auto &column : row) {
-      data += {column.name(), column.c_str()};
-    }
+    // Connecting to the PostgreSQL socket.
+    this->connection =
+      pqxx::connection(/* connection_string */ connection_string);
   }
   catch (const std::exception &error) {
+    return Response(FAIL);
   }
 
-  return data;
+  return Response();
+}
+
+Response PostgreSQLConnection::close() {
+  try {
+    this->connection.close();
+  }
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return Response();
+}
+
+Response PostgreSQLConnection::initializeAuthStructure() {
+  try {
+    auto work = pqxx::work(/* connection */ this->connection);
+
+    /**
+     * Running initialization scripts from the file specified in
+     * "table.initializer". This gives flexibility to both developers and the
+     * program itself to dynamically operate with the database.
+     */
+    const auto &initialization_script =
+      utils::readFile(/* file_name */
+                      this->db_config["table.initializer"].get<string>());
+
+    work.exec(/* query */ initialization_script);
+    work.commit();
+  }
+  catch (const pqxx::sql_error &error) {
+    return Response(QUERY_FAULT);
+  }
+  // Failures that are encountered by the program itself:
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return Response();
+}
+
+Response PostgreSQLConnection::destroyAuthStructure() {
+  try {
+    auto work = pqxx::work(/* connection */ this->connection);
+
+    // Same as the "table.initializer"
+    const auto &destruction_script =
+      utils::readFile(/* file_name */
+                      this->db_config["table.destroyer"].get<string>());
+
+    work.exec(/* query */ destruction_script);
+    work.commit();
+  }
+  catch (const pqxx::sql_error &error) {
+    return Response(QUERY_FAULT);
+  }
+  // Failures that are encountered by the program itself:
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return Response();
+}
+
+Response PostgreSQLConnection::wipeAlldata() {
+  // TODO(anyone): Implement this method
+  return Response();
+}
+
+Response PostgreSQLConnection::addUser(const UserData &user_data) {
+  try {
+    auto columns = string();
+    auto values = string();
+
+    /**
+     * Preparing data to insert into the table specified in table_name aka
+     * "table.name" in PostgreSQL configuration.
+     * Here, columns are for example: email, password, etc. and values are
+     * collected from the corresponding column in user_data. For example,
+     * consider the data was passed into user_date is:
+     *   {
+     *     "email": "example@email.com",
+     *     "password": "very_strong_password"
+     *   }
+     *
+     * This JSON data will be converted into this:
+     * columns = "email, password";
+     * values = "'example@email.com', 'very_strong_password'";
+     */
+
+    for (auto i = user_data.begin(); i != user_data.end(); i++) {
+      if (i != user_data.begin() && i != user_data.end()) {
+        // Separating each column names with ", ".
+        columns.append(", ");
+
+        // Separating each column values with ", ".
+        values.append(", ");
+      }
+
+      // Use keys of JSON data as column names.
+      columns.append(i.key());
+
+      /**
+       * Use values of each JSON data as column values with values wrapped by
+       * single quotes (').
+       */
+      values.append("'" + i.value().get<string>() + "'");
+    }
+
+    // Inserting the data.
+    auto work = pqxx::work(/* connection */ this->connection);
+
+    work.exec(/* query */
+              "INSERT INTO " + this->table_name + "(" + columns + ")" +
+              " VALUES " + "(" + values + ")");
+    work.commit();
+  }
+  catch (const pqxx::sql_error &error) {
+    return Response(QUERY_FAULT);
+  }
+  // Failures that are encountered by the program itself:
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return Response();
+}
+
+Response PostgreSQLConnection::deleteUser(const Json &query) {
+  try {
+    auto work = pqxx::work(/* connection */ this->connection);
+    work.exec(/* query */
+              "DELETE FROM " + this->table_name + " WHERE " +
+              utils::join(/* object */ query,
+                          /* delimiter */ " AND ",
+                          /* sub_delimiter */ " = ",
+                          /* key_wrapper */ "",
+                          /* value_wrapper */ "'"));
+    work.commit();
+  }
+  catch (const pqxx::sql_error &error) {
+    return Response(QUERY_FAULT);
+  }
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return SUCCESS;
+}
+
+Response PostgreSQLConnection::updateUser(const Json &queries,
+                                          const UserData &user_data) {
+  try {
+    const auto &updates = utils::join(/* object */ user_data,
+                                      /* delimiter */ ", ",
+                                      /* sub_delimiter */ " = ",
+                                      /* key_wrapper */ "",
+                                      /* value_wrapper */ "'");
+
+    auto work = pqxx::work(/* connection */ this->connection);
+    work.exec(/* query */
+              "UPDATE " + this->table_name + " SET " + updates + " WHERE " +
+              utils::join(/* object */ queries,
+                          /* delimiter */ " AND ",
+                          /* sub_delimiter */ " = ",
+                          /* key_wrapper */ "",
+                          /* value_wrapper */ "'"));
+
+    work.commit();
+  }
+  catch (const pqxx::sql_error &error) {
+    return Response(QUERY_FAULT);
+  }
+  catch (const std::exception &error) {
+    return Response(FAIL);
+  }
+
+  return Response();
+}
+
+Response PostgreSQLConnection::queryUser(const Json &queries) {
+  auto response = Response();
+
+  try {
+    auto data = Json({});
+
+    auto work = pqxx::work(/* connection */ this->connection);
+    const auto &row =
+      work.exec1(/* query */ "SELECT * FROM " + this->table_name + " WHERE " +
+                 utils::join(/* object */ queries,
+                             /* delimiter */ " AND ",
+                             /* sub_delimiter */ " = ",
+                             /* key_wrapper */ "",
+                             /* value_wrapper */ "'"));
+
+    for (const auto &column : row) {
+      /**
+       * Storing column names as JSON object keys and column values as values
+       * of the keys.
+       *
+       * Here, name() method returns the name of column and c_str() method
+       * returns the value of that corresponding column. Json takes this data
+       * and then converts it into
+       *  {
+       *    "column2": "column_value1",
+       *    "column1": "column_value2"
+       *  }
+       */
+      data.push_back({column.name(), column.c_str()});
+    }
+
+    response.data = data;
+  }
+  catch (const pqxx::sql_error &error) {
+    response.status_code = QUERY_FAULT;
+  }
+  catch (const std::exception &error) {
+    response.status_code = FAIL;
+  }
+
+  return response;
 }

@@ -8,11 +8,12 @@
 
 #include <string>
 
-#include "auth/status_codes.hpp"  // For Status codes
-#include "base.hpp"               // For BaseConnection
-#include "nlohmann/json.hpp"      // For JSON data structure
-#include "pqxx/pqxx"              // For PostgreSQL database driver
+#include "auth/response.hpp"  // Response
+#include "base.hpp"           // BaseConnection
+#include "nlohmann/json.hpp"  // nlohmann::json
+#include "pqxx/pqxx"          // pqxx::connection
 
+using string = std::string;
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
 
@@ -26,24 +27,29 @@ class PostgreSQLConnection: public BaseConnection {
    * TODO: Please find a better way to do this.
    */
   pqxx::connection connection {"dbname=postgres"};
-  std::string table_name;
+
+  /**
+   * Name of the table in which user's authentication related data will be
+   * stored into.
+   */
+  string table_name;
 
  public:
   explicit PostgreSQLConnection(const Json &config);
   ~PostgreSQLConnection();
 
-  Status open();
-  Status close();
+  Response open();
+  Response close();
 
-  Status initializeAuthStructure();
-  Status destroyAuthStructure();
-  Status wipeAlldata();
+  Response initializeAuthStructure();
+  Response destroyAuthStructure();
+  Response wipeAlldata();
 
-  Status addUser(const UserData &user_data);
-  Status deleteUser(const Json &identifiers);
-  Status updateUser(const Json &identifiers, const UserData &user_data);
+  Response addUser(const UserData &user_data);
+  Response deleteUser(const Json &queries);
+  Response updateUser(const Json &queries, const UserData &user_data);
 
-  UserData queryUser(const Json &identifiers);
+  Response queryUser(const Json &queries);
 };
 
 #endif  // SRC_CONNECTION_POSTGRESQL_HPP_
