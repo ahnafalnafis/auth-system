@@ -5,14 +5,14 @@
 
 #include "base.hpp"
 
-#include "nlohmann/json.hpp"  // For JSON data structure
+#include "nlohmann/json.hpp"  // nlohmann::json
 
 using Json = nlohmann::json;
 
-BaseConnection::BaseConnection(const Json &config): config(config) {}
+BaseConnection::BaseConnection(const Json &config): db_config(config) {}
 
 BaseConnection::~BaseConnection() {}
 
-DBType BaseConnection::getConnectionType() {
+DBType BaseConnection::getConnectionType() const {
   return this->_connection_type;
 }

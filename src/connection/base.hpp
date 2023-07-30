@@ -6,10 +6,10 @@
 #ifndef SRC_CONNECTION_BASE_HPP_
 #define SRC_CONNECTION_BASE_HPP_
 
-#include <cstdint>
+#include <cstdint>  // uint16_t
 
-#include "auth/status_codes.hpp"  // For Status codes
-#include "nlohmann/json.hpp"      // For JSON data structure
+#include "auth/response.hpp"  // Response
+#include "nlohmann/json.hpp"  // nlohmann::json
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
@@ -29,30 +29,30 @@ class BaseConnection {
    */
 
   DBType _connection_type;
-  Json config;
+  Json db_config;
 
  public:
   explicit BaseConnection(const Json &config);
   virtual ~BaseConnection();
 
-  DBType getConnectionType();
+  DBType getConnectionType() const;
 
   // Connection functions.
-  virtual Status open() = 0;
-  virtual Status close() = 0;
+  virtual Response open() = 0;
+  virtual Response close() = 0;
 
   // Functions for managing underlying user data structures.
-  virtual Status initializeAuthStructure() = 0;
-  virtual Status destroyAuthStructure() = 0;
-  virtual Status wipeAlldata() = 0;
+  virtual Response initializeAuthStructure() = 0;
+  virtual Response destroyAuthStructure() = 0;
+  virtual Response wipeAlldata() = 0;
 
   // Functions for managing user data in the database.
-  virtual Status addUser(const UserData &user_data) = 0;
-  virtual Status deleteUser(const Json &identifiers) = 0;
-  virtual Status updateUser(const Json &identifiers,
-                            const UserData &user_data) = 0;
+  virtual Response addUser(const UserData &user_data) = 0;
+  virtual Response deleteUser(const Json &queries) = 0;
+  virtual Response updateUser(const Json &queries,
+                              const UserData &user_data) = 0;
 
-  virtual UserData queryUser(const Json &identifiers) = 0;
+  virtual Response queryUser(const Json &queries) = 0;
 };
 
 #endif  // SRC_CONNECTION_BASE_HPP_
