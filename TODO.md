@@ -1,3 +1,2 @@
 - Update READMEs
-- Make exception free codes
-- Return a messages with status codes
+- Implement auth::Login()
