@@ -1,4 +1,6 @@
 # Authentication system
 
-A simple user authentication system which provides APIs for C++ to
-authenticate users. For now it only supports PostgreSQL.
+A simple user authentication system which provides APIs for several
+languages[^1] to authenticate users.
+
+[^1]: Currently supports C++
