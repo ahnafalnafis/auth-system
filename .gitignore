@@ -1,8 +1,27 @@
 # Build files
 build
+CMakeFiles
+CMakeCache.txt
 
-# Binaries
+# Compiled object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executable files
 bin
+*.out
+*.exe
+*.app
 
 # Compiler flags for clangd
 compile_commands.json
