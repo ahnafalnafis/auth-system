@@ -47,7 +47,7 @@ Response PostgreSQLConnection::open() {
       pqxx::connection(/* connection_string */ connection_string);
   }
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -58,7 +58,7 @@ Response PostgreSQLConnection::close() {
     this->connection.close();
   }
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -85,7 +85,7 @@ Response PostgreSQLConnection::initializeAuthStructure() {
   }
   // Failures that are encountered by the program itself:
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -108,7 +108,7 @@ Response PostgreSQLConnection::destroyAuthStructure() {
   }
   // Failures that are encountered by the program itself:
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -162,6 +162,7 @@ Response PostgreSQLConnection::addUser(const UserData &user_data) {
     // Inserting the data.
     auto work = pqxx::work(/* connection */ this->connection);
 
+    // TODO(anyone): Insert distinct values
     work.exec(/* query */
               "INSERT INTO " + this->table_name + "(" + columns + ")" +
               " VALUES " + "(" + values + ")");
@@ -172,7 +173,7 @@ Response PostgreSQLConnection::addUser(const UserData &user_data) {
   }
   // Failures that are encountered by the program itself:
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -194,7 +195,7 @@ Response PostgreSQLConnection::deleteUser(const Json &query) {
     return Response(QUERY_FAULT);
   }
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return SUCCESS;
@@ -224,7 +225,7 @@ Response PostgreSQLConnection::updateUser(const Json &queries,
     return Response(QUERY_FAULT);
   }
   catch (const std::exception &error) {
-    return Response(FAIL);
+    return Response(PROGRAM_FAILURE);
   }
 
   return Response();
@@ -238,14 +239,22 @@ Response PostgreSQLConnection::queryUser(const Json &queries) {
 
     auto work = pqxx::work(/* connection */ this->connection);
     const auto &row =
-      work.exec1(/* query */ "SELECT * FROM " + this->table_name + " WHERE " +
-                 utils::join(/* object */ queries,
-                             /* delimiter */ " AND ",
-                             /* sub_delimiter */ " = ",
-                             /* key_wrapper */ "",
-                             /* value_wrapper */ "'"));
+      work.exec(/* query */ "SELECT * FROM " + this->table_name + " WHERE " +
+                utils::join(/* object */ queries,
+                            /* delimiter */ " AND ",
+                            /* sub_delimiter */ " = ",
+                            /* key_wrapper */ "",
+                            /* value_wrapper */ "'"));
 
-    for (const auto &column : row) {
+    /**
+     * None of the column values should be null. If there's null value from any
+     * column then program should break out.
+     */
+    if (row[0][0].is_null()) {
+      return Response(FAIL);
+    }
+
+    for (int i = 0; i < row.columns(); i++) {
       /**
        * Storing column names as JSON object keys and column values as values
        * of the keys.
@@ -258,7 +267,7 @@ Response PostgreSQLConnection::queryUser(const Json &queries) {
        *    "column1": "column_value2"
        *  }
        */
-      data.push_back({column.name(), column.c_str()});
+      data.push_back({row[0][i].name(), row[0][i].c_str()});
     }
 
     response.data = data;
@@ -267,7 +276,7 @@ Response PostgreSQLConnection::queryUser(const Json &queries) {
     response.status_code = QUERY_FAULT;
   }
   catch (const std::exception &error) {
-    response.status_code = FAIL;
+    response.status_code = PROGRAM_FAILURE;
   }
 
   return response;

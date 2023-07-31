@@ -5,6 +5,7 @@
 
 #include "auth.hpp"
 
+#include <exception>
 #include <fstream>  // ifstream
 
 #include "auth/response.hpp"  // Response
@@ -25,25 +26,32 @@ Response auth::Register(const UserData &user_data) {
     return Response(UNCONFIGURED_DATABASE);
   }
 
-  auto psqlc = PostgreSQLConnection(config["database.config"]["PostgreSQL"]);
-  auto *connection = &psqlc;
+  try {
+    auto psqlc = PostgreSQLConnection(config["database.config"]["PostgreSQL"]);
+    auto *connection = &psqlc;
 
-  connection->open();
-  connection->initializeAuthStructure();
+    connection->open();
+    connection->initializeAuthStructure();
 
-  auto query = connection->queryUser(user_data);
+    auto query = connection->queryUser(user_data);
 
-  /**
-   * If something wrong happen while querying user, simply return the status
-   * code
-   */
-  if (query.status_code) {
-    return Response(query.status_code);
+    /**
+     * Simply return what is returned from queryUser() if it wasn't either
+     * SUCCESS or FAIL.
+     */
+    if (query.status_code != SUCCESS && query.status_code != FAIL) {
+      return Response(query.status_code);
+    }
+    else if (query.status_code == SUCCESS) {
+      return Response(FAIL);
+    }
+    connection->addUser(user_data);
+
+    connection->close();
   }
-
-  connection->addUser(user_data);
-
-  connection->close();
+  catch (const std::exception &error) {
+    return Response(PROGRAM_FAILURE);
+  }
 
   return Response();
 }
