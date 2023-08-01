@@ -25,13 +25,12 @@ enum StatusCode : uint16_t {
 };
 
 struct Response {
- public:
+  StatusCode status_code;
+  nlohmann::json data;
+
   Response(const StatusCode status_code = SUCCESS,
            const UserData data = nullptr)
       : status_code(status_code), data(data) {}
-
-  StatusCode status_code;
-  nlohmann::json data;
 };
 
 #endif  // INCLUDE_AUTH_RESPONSE_HPP_
