@@ -8,8 +8,8 @@
 
 #include <cstdint>  // uint16_t
 
-#include "auth/response.hpp"  // Response
 #include "nlohmann/json.hpp"  // nlohmann::json
+#include "response.hpp"       // Response
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;

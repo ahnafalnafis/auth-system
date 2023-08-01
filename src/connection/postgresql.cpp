@@ -10,8 +10,8 @@
 #include <exception>
 #include <string>
 
-#include "../utils.hpp"       // utils::join, utils::readFile
-#include "auth/response.hpp"  // Response
+#include "utils.hpp"       // utils::join, utils::readFile
+#include "response.hpp"  // Response
 #include "base.hpp"           // BaseConnection
 #include "nlohmann/json.hpp"  // nlohmann::json
 #include "pqxx/pqxx"          // pqxx::connection, pqxx::work

@@ -8,10 +8,10 @@
 
 #include <string>
 
-#include "auth/response.hpp"  // Response
 #include "base.hpp"           // BaseConnection
 #include "nlohmann/json.hpp"  // nlohmann::json
 #include "pqxx/pqxx"          // pqxx::connection
+#include "response.hpp"       // Response
 
 using string = std::string;
 using Json = nlohmann::json;

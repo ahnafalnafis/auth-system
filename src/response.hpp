@@ -11,8 +11,10 @@
 
 #include "nlohmann/json.hpp"  // nlohmann::json
 
+using UserData = nlohmann::json;
+
 // Status codes:
-enum _status_code : uint16_t {
+enum StatusCode : uint16_t {
   SUCCESS,
   FAIL = 101,
   PROGRAM_FAILURE,
@@ -22,12 +24,13 @@ enum _status_code : uint16_t {
   UNCONFIGURED_DATABASE
 };
 
-class Response {
+struct Response {
  public:
-  Response(_status_code status_code = SUCCESS, nlohmann::json data = nullptr)
+  Response(const StatusCode status_code = SUCCESS,
+           const UserData data = nullptr)
       : status_code(status_code), data(data) {}
 
-  _status_code status_code;
+  StatusCode status_code;
   nlohmann::json data;
 };
 

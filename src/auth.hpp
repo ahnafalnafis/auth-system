@@ -6,8 +6,8 @@
 #ifndef INCLUDE_AUTH_HPP_
 #define INCLUDE_AUTH_HPP_
 
-#include "auth/response.hpp"  // Response
 #include "nlohmann/json.hpp"  // nlohmann::json
+#include "response.hpp"       // Response
 
 using UserData = nlohmann::json;
 

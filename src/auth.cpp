@@ -8,9 +8,9 @@
 #include <exception>
 #include <fstream>  // ifstream
 
-#include "auth/response.hpp"  // Response
 #include "connection.hpp"     // BaseConnection
 #include "nlohmann/json.hpp"  // nlohmann::json
+#include "response.hpp"       // Response
 
 using Json = nlohmann::json;
 using UserData = nlohmann::json;
