@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef INCLUDE_AUTH_RESPONSE_HPP_
-#define INCLUDE_AUTH_RESPONSE_HPP_
+#ifndef SRC_RESPONSE_HPP_
+#define SRC_RESPONSE_HPP_
 
 #include <cstdint>  // uint16_t
 #include <string>
@@ -13,7 +13,11 @@
 
 using UserData = nlohmann::json;
 
-// Status codes:
+/**
+ * Status codes for internal Response object.
+ * These status codes doesn't have any kind of relationship with HTTP Response
+ * status codes. These status codes are only limited to this program.
+ */
 enum StatusCode : uint16_t {
   SUCCESS,
   FAIL = 101,
@@ -24,13 +28,22 @@ enum StatusCode : uint16_t {
   UNCONFIGURED_DATABASE
 };
 
+/**
+ * Almost like a HTTP Response object but aimed for internal works only.
+ */
 struct Response {
-  StatusCode status_code;
-  nlohmann::json data;
+  StatusCode status;
 
-  Response(const StatusCode status_code = SUCCESS,
-           const UserData data = nullptr)
-      : status_code(status_code), data(data) {}
+  // Optional message along with the status code.
+  std::string message;
+
+  // data should only refer to the user data returned by any function or so.
+  UserData data;
+
+  Response(const StatusCode &status = SUCCESS,
+           const std::string &message = "",
+           const UserData &data = nullptr)
+      : status(status), message(message), data(data) {}
 };
 
-#endif  // INCLUDE_AUTH_RESPONSE_HPP_
+#endif  // SRC_RESPONSE_HPP_

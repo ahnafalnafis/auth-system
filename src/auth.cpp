@@ -39,10 +39,10 @@ Response auth::Register(const UserData &user_data) {
      * Simply return what is returned from queryUser() if it wasn't either
      * SUCCESS or FAIL.
      */
-    if (query.status_code != SUCCESS && query.status_code != FAIL) {
-      return Response(query.status_code);
+    if (query.status != SUCCESS && query.status != FAIL) {
+      return Response(query.status);
     }
-    else if (query.status_code == SUCCESS) {
+    else if (query.status == SUCCESS) {
       return Response(FAIL);
     }
     connection->addUser(user_data);

@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-#ifndef INCLUDE_AUTH_HPP_
-#define INCLUDE_AUTH_HPP_
+#ifndef SRC_AUTH_HPP_
+#define SRC_AUTH_HPP_
 
 #include "nlohmann/json.hpp"  // nlohmann::json
 #include "response.hpp"       // Response
@@ -18,4 +18,4 @@ namespace auth {
 
 }  // namespace auth
 
-#endif  // INCLUDE_AUTH_HPP_
+#endif  // SRC_AUTH_HPP_

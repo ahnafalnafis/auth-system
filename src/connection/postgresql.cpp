@@ -273,10 +273,10 @@ Response PostgreSQLConnection::queryUser(const Json &queries) {
     response.data = data;
   }
   catch (const pqxx::sql_error &error) {
-    response.status_code = QUERY_FAULT;
+    response.status = QUERY_FAULT;
   }
   catch (const std::exception &error) {
-    response.status_code = PROGRAM_FAILURE;
+    response.status = PROGRAM_FAILURE;
   }
 
   return response;
