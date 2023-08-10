@@ -23,12 +23,13 @@ bin
 *.exe
 *.app
 
-# Compiler flags for clangd
-compile_commands.json
+# Cache for clangd
 .cache
 
 # External libraries
 external
+
+# Tools
 vgcore*
 
 # Text editor specific files
